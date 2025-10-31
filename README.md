@@ -157,6 +157,18 @@ The `/v1.0/verify/*` endpoints use the IBM Verify Privacy SDK to interact with t
 2. Configure your tenant URL, client ID, and client secret in the `.env` file
 3. Ensure your IBM Verify tenant is properly configured for privacy and consent management
 
+## Configuring as an External Consent Provider on IBM Verify
+
+To use this Node.js application as an external consent provider in IBM Verify, you need to configure webhooks, consent providers, and OIDC applications in your IBM Verify tenant.
+
+For detailed configuration steps, see the [Configuring IBM Verify guide](configuring-verify/README.md).
+
+The configuration process involves:
+1. Creating a webhook that points to this application
+2. Creating a consent provider that references the webhook
+3. Updating your OIDC application to use the consent provider
+
+
 ## Error Handling
 
 The API returns appropriate error responses with status codes and error messages:
