@@ -1,0 +1,218 @@
+{
+	"info": {
+		"_postman_id": "c2c551c9-8b93-4876-b8c3-53879924075d",
+		"name": "External consent providers",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3770849"
+	},
+	"item": [
+		{
+			"name": "Configuration",
+			"item": [
+				{
+					"name": "Consent provider webhook",
+					"item": [
+						{
+							"name": "Create webhook",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.variables.set(\"consentTransform\", JSON.stringify(`statements:",
+											"- context: >",
+											"    consents := body.consents.map(",
+											"            consent,",
+											"            consent.put(\"geoIP\", has(body.geoIP) ? body.geoIP : \"\")",
+											"                .put(\"subjectId\", body.subjectId)",
+											"                .put(\"isExternalSubject\", has(body.isExternalSubject) ? body.isExternalSubject : false)",
+											"        )",
+											"- return: >",
+											"    {",
+											"        \"body\": context.consents",
+											"    }",
+											"`))",
+											"",
+											"console.log(`DEBUG: consentTransform: ${pm.variables.get(\"consentTransform\")}`)"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Verify consent app\",\n    \"type\": \"realtime\",\n    \"urls\": [\n        \"https://consent-app-endpoint\"\n    ],\n    \"authentication\": {\n        \"oauth\": {\n            \"client_id\": \"your-client-id\",\n            \"client_secret\": \"your-client-secret\",\n            \"token_endpoint\": \"https://{{tenant}}/oauth2/token\",\n            \"token_endpoint_auth_method\": \"client_secret_post\"\n        },\n        \"type\": \"oauth\"\n    },\n    \"purpose\": [\n        \"external_consent\"\n    ],\n    \"resources\": {\n        \"consents\": {\n            \"suffix\": \"/v1.0/verify/consents\",\n            \"method\": \"POST\",\n            \"expectedStatus\": [\n                200,\n                207,\n                400,\n                401\n            ],\n            \"transform\": {\n                \"outgoing\": {{consentTransform}}\n            }\n        },\n        \"dsp\": {\n            \"suffix\": \"/v1.0/verify/page_metadata\",\n            \"method\": \"POST\",\n            \"expectedStatus\": [\n                200,\n                400,\n                401\n            ]\n        },\n        \"dua\": {\n            \"suffix\": \"/v1.0/verify/assessment\",\n            \"method\": \"POST\",\n            \"expectedStatus\": [\n                200,\n                207,\n                400,\n                401\n            ]\n        },\n        \"test\": {\n            \"suffix\": \"/health\",\n            \"method\": \"GET\"\n        }\n    }\n}"
+								},
+								"url": {
+									"raw": "https://{{tenant}}/webhooks/v1.0/webhooks-mgmt/",
+									"protocol": "https",
+									"host": [
+										"{{tenant}}"
+									],
+									"path": [
+										"webhooks",
+										"v1.0",
+										"webhooks-mgmt",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get webhook",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://{{tenant}}/webhooks/v1.0/webhooks-mgmt/:id",
+									"protocol": "https",
+									"host": [
+										"{{tenant}}"
+									],
+									"path": [
+										"webhooks",
+										"v1.0",
+										"webhooks-mgmt",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "3047ea09-173d-45d0-9ac6-5f2b5ab6fc54"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update webhook",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.variables.set(\"consentTransform\", JSON.stringify(`statements:",
+											"- context: >",
+											"    consents := body.consents.map(",
+											"            consent,",
+											"            consent.put(\"geoIP\", has(body.geoIP) ? body.geoIP : \"\")",
+											"                .put(\"subjectId\", body.subjectId)",
+											"                .put(\"isExternalSubject\", has(body.isExternalSubject) ? body.isExternalSubject : false)",
+											"        )",
+											"- return: >",
+											"    {",
+											"        \"body\": context.consents",
+											"    }",
+											"`))",
+											"",
+											"console.log(`DEBUG: consentTransform: ${pm.variables.get(\"consentTransform\")}`)"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "// Replace with the body from the GET and make\n// changes as needed.",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://{{tenant}}/webhooks/v1.0/webhooks-mgmt/:id",
+									"protocol": "https",
+									"host": [
+										"{{tenant}}"
+									],
+									"path": [
+										"webhooks",
+										"v1.0",
+										"webhooks-mgmt",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "3047ea09-173d-45d0-9ac6-5f2b5ab6fc54"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Consent provider",
+					"item": []
+				},
+				{
+					"name": "Application",
+					"item": []
+				}
+			]
+		},
+		{
+			"name": "Runtime",
+			"item": []
+		}
+	]
+}

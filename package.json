@@ -1,0 +1,28 @@
+{
+  "name": "consent-app-sample",
+  "version": "1.0.0",
+  "description": "Privacy and Consent API Server implementing the example endpoints from privacy_api.yml",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "node test.js"
+  },
+  "keywords": [
+    "privacy",
+    "consent",
+    "api",
+    "example"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@ibm-verify/privacy": "^1.0.2",
+    "axios": "^1.13.1",
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "morgan": "^1.10.1"
+  }
+}

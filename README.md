@@ -1,0 +1,166 @@
+# Privacy and Consent API Server
+
+This Node.js application implements a server that provides privacy and consent management endpoints based on the privacy_api.yml OpenAPI specification. These endpoints can be used in IBM Verify as external consent providers. This application is meant to be a sample implementation and should be modified to fit your specific use case.
+
+There are two implementations:
+
+1. A basic consent provider that uses in-memory storage for consent data.
+2. A consent provider that uses IBM Verify as the privacy and consent management service.
+
+## Features
+
+- Implementation of six key endpoints:
+  - Basic endpoints with in-memory storage:
+    - `/v1.0/basic/assessment`: Assess if a user has given consent for specific purposes
+    - `/v1.0/basic/page_metadata`: Get metadata for consent presentation
+    - `/v1.0/basic/consents`: Store user consents
+  - IBM Verify Privacy SDK integration:
+    - `/v1.0/verify/assessment`: Assess privacy using IBM Verify
+    - `/v1.0/verify/page_metadata`: Get metadata using IBM Verify
+    - `/v1.0/verify/consents`: Store consents using IBM Verify
+- Request validation
+- Error handling
+- In-memory storage for basic endpoints (for demonstration purposes)
+- IBM Verify Privacy SDK integration for verify endpoints
+
+## Installation
+
+1. Clone this repository
+2. Install dependencies:
+   ```
+   npm install
+   ```
+3. Create a `.env` file based on `.env.example` with your IBM Verify credentials:
+   ```
+   VERIFY_TENANT_URL=https://your-tenant.verify.ibm.com
+   VERIFY_CLIENT_ID=your-client-id
+   VERIFY_CLIENT_SECRET=your-client-secret
+   ```
+4. Start the server:
+   ```
+   node index.js
+   ```
+
+The server will start on port 3000 by default. You can change this by setting the `PORT` environment variable.
+
+## API Endpoints
+
+### Basic Endpoints (In-memory storage)
+
+#### POST /v1.0/basic/assessment
+
+Assess if a user has given consent for specific purposes.
+
+**Request Body:**
+```json
+{
+  "subjectId": "user123",
+  "isExternalSubject": false,
+  "geoIP": "192.168.1.1",
+  "items": [
+    {
+      "purposeId": "marketing",
+      "accessTypeId": "email",
+      "attributeId": "email_address"
+    }
+  ]
+}
+```
+
+**Response:**
+```json
+{
+  "status": "needs_consent",
+  "assessment": [
+    {
+      "purposeId": "marketing",
+      "accessTypeId": "email",
+      "attributeId": "email_address",
+      "attributeValue": null,
+      "result": {
+        "approved": false,
+        "approvalRequired": true,
+        "promptForConsent": true,
+        "reason": null
+      }
+    }
+  ]
+}
+```
+
+#### POST /v1.0/basic/page_metadata
+
+Get metadata for consent presentation.
+
+**Request Body:**
+```json
+{
+  "subjectId": "user123",
+  "isExternalSubject": false,
+  "geoIP": "192.168.1.1",
+  "items": [
+    {
+      "purposeId": "terms-of-service"
+    },
+    {
+      "purposeId": "marketing",
+      "accessTypeId": "email",
+      "attributeId": "email_address"
+    }
+  ]
+}
+```
+
+#### POST /v1.0/basic/consents
+
+Store user consents.
+
+**Request Body:**
+```json
+[
+  {
+    "subjectId": "user123",
+    "purposeId": "marketing",
+    "accessTypeId": "email",
+    "attributeId": "email_address",
+    "state": "opt_in",
+    "isExternalSubject": false
+  }
+]
+```
+
+### IBM Verify Privacy Endpoints
+
+#### POST /v1.0/verify/assessment
+
+Assess privacy requirements using IBM Verify Privacy SDK.
+
+**Request Body:** Same as basic assessment endpoint
+
+#### POST /v1.0/verify/page_metadata
+
+Get consent presentation metadata using IBM Verify Privacy SDK.
+
+**Request Body:** Same as basic page_metadata endpoint
+
+#### POST /v1.0/verify/consents
+
+Store user consent records using IBM Verify Privacy SDK.
+
+**Request Body:** Same as basic consents endpoint
+
+## IBM Verify Privacy SDK Integration
+
+The `/v1.0/verify/*` endpoints use the IBM Verify Privacy SDK to interact with the IBM Verify service. To use these endpoints, you need to:
+
+1. Have an IBM Verify tenant
+2. Configure your tenant URL, client ID, and client secret in the `.env` file
+3. Ensure your IBM Verify tenant is properly configured for privacy and consent management
+
+## Error Handling
+
+The API returns appropriate error responses with status codes and error messages:
+
+- 400: Bad Request (invalid input)
+- 500: Internal Server Error
+

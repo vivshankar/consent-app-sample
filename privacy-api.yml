@@ -1,0 +1,783 @@
+openapi: '3.0.2'
+info:
+  title: Privacy and Consent API
+  description: Contains the privacy and consent API
+  version: '1.0'
+servers:
+  - url: https://{tenant}
+    variables:
+      tenant:
+        default: abc.verify.ibm.com
+        description: IBM Verify tenant hostname.
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: OAuth 2.0 Bearer Token authentication
+  schemas:
+    "privacy.v2.consent_display_types":
+      type: string
+      x-go-type-skip-optional-pointer: true
+      enum:
+        - do_not_show
+        - transparent
+        - opt_in_or_out
+        - allow_or_deny
+      x-enum-varnames:
+        - consent_display_types_do_not_show
+        - consent_display_types_transparent
+        - consent_display_types_opt_in_or_out
+        - consent_display_types_allow_or_deny
+      description: |
+        Mapping:
+        
+        - do_not_show: Do not show the purpose-of-use
+        - transparent: Transparent consent request
+        - opt_in_or_out: Opt-in or opt-out style consent
+        - allow_or_deny: Default allow or deny consent
+      default: allow_or_deny
+    "privacy.v2.consent_types":
+      type: string
+      x-go-type-skip-optional-pointer: true
+      enum:
+        - allow
+        - deny
+        - opt_in
+        - opt_out
+        - transparent
+      description: |
+        Consent types indicate the type of consent collected from the user. For example, a transparent consent doesn't give the user an option to opt out of assenting if they continue to use the service.
+        
+        Options available as below:
+
+        - allow: "Allow" consent response
+        - deny: "Deny" consent response
+        - opt_in: "Opt-in" consent response
+        - opt_out: "Opt-out" consent response
+        - transparent: "Transparent" consent response
+      x-enum-varnames:
+        - consent_types_allow
+        - consent_types_deny
+        - consent_types_opt_in
+        - consent_types_opt_out
+        - consent_types_transparent
+    "privacy.v2.consent_status_types":
+      type: string
+      x-go-type-skip-optional-pointer: true
+      enum:
+        - active
+        - expired
+        - future
+        - none
+      description: |
+        The status of the consent record. Options available as below:
+        
+        - active: Active consent (1)
+        - expired: Expired consent (2)
+        - future: Consent that will be activated in the future (3)
+        - none: No consent (8)
+      x-enum-varnames:
+        - consent_status_active
+        - consent_status_expired
+        - consent_status_future
+        - consent_status_none
+    "privacy.v2.system_options":
+      type: object
+      properties:
+        "sources":
+          type: object
+          x-go-type-skip-optional-pointer: true
+          description: |
+            Sources of data that are included in evaluating attribute values based on the provider's mapping configuration. Well-defined sources are as below -
+          
+            - "user", which is the SCIM representation of the user account.
+            - "idsuser", which is the authentication credential.
+            - "requestContext", which is the request context, including parameters and headers.
+        "trace":
+          type: boolean
+          x-omitempty: false
+          x-go-type-skip-optional-pointer: true
+          description: Indicates if the request should be traced.
+        "traceVars":
+          type: object
+          x-go-type-skip-optional-pointer: true
+          additionalProperties:
+            type: string
+            x-go-type-skip-optional-pointer: true
+          description: Trace variables that are included with each trace record. This is represented by a string-to-string map.
+    "privacy.v2.error":
+      type: object
+      properties:
+        "messageId":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: Verify error message identifier.
+        "messageDescription":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: Localized description of the error.
+        "extraInfo":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: Extra information that is not captured in the message description. In the case of external consent systems, this may contain additional information sent by the third-party system.
+    "privacy.v2.request_item":
+      type: object
+      properties:
+        "profileId":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: The data privacy profile configured on Verify. When this is provided, the other fields are ignored.
+        "purposeId":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: Identifies the purpose-of-use for the item being requested, such as "billing". If you are checking for the consent status of a document, the document ID is used here. For OAuth scopes, use "ibm-oauth-scope".
+        "accessTypeId":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: Identifies the access type being requested, such as "read".
+        "attributeId":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: Identifies the attribute being requested, such as "email".
+        "attributeValue":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: Attribute value to narrow the consent being requested, such as permission to use a specific email address.
+    "privacy.v2.assessment_decision":
+      type: object
+      properties:
+        "approved":
+          type: boolean
+          x-omitempty: false
+          x-go-type-skip-optional-pointer: true
+          description: Indicates if the request has been approved.
+        "approvalRequired":
+          type: boolean
+          x-omitempty: false
+          x-go-type-skip-optional-pointer: true
+          description: Indicates if the approval is required to be provided by the subject.
+        "promptForConsent":
+          type: boolean
+          x-omitempty: false
+          x-go-type-skip-optional-pointer: true
+          description: |
+            Indicates if consent is required and the subject should be prompted.
+            
+            This is computed by the system based on the 'approved' state and the 'reason'. In some cases, even if no valid assent is provided, a rule may imply that collecting a user consent is meaningless, so this property is set to false.
+        "reason":
+          type: object
+          $ref: '#/components/schemas/privacy.v2.error'
+          description: The details of the denial if "approved" is false.
+    "privacy.v2.assessment":
+      type: object
+      properties:
+        "purposeId":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: Purpose-of-use for the item that is requested, such as "billing". If you are checking for the consent status of a document, the document ID is used here. For OAuth scopes, use "ibm-oauth-scope".
+        "accessTypeId":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: Access type that is requested, such as "read".
+        "attributeId":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: Attribute that is requested, such as "email".
+        "attributeValue":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: Attribute value that is requested, such as permission to use a specific email address.
+        "result":
+          $ref: '#/components/schemas/privacy.v2.assessment_decision'
+    "privacy.v2.assessment_request":
+      type: object
+      properties:
+        "subjectId":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          minLength: 1
+          description: Identifies the subject that the consent is associated with.
+        "isExternalSubject":
+          type: boolean
+          x-omitempty: false
+          x-go-type-skip-optional-pointer: true
+          description: Identifies if the subject is a Verify user. This is not checked for external consent provider integrations.
+        "geoIP":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: Client IP address making this request. If this is not provided, the client IP address is computed using the corresponding header(s) used by Verify to identify the client IP.
+        "items":
+          type: array
+          x-go-type: "[]*PrivacyV2RequestItem"
+          x-go-type-skip-optional-pointer: true
+          items:
+            $ref: '#/components/schemas/privacy.v2.request_item'
+        "sys":
+          $ref: '#/components/schemas/privacy.v2.system_options'
+    "privacy.v2.assessment_response":
+      type: object
+      properties:
+        "status":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          enum:
+            - approved
+            - needs_consent
+            - multistatus
+            - denied
+            - unknown
+          x-enum-varnames:
+            - assessment_response_status_approved
+            - assessment_response_status_needs_consent
+            - assessment_response_status_multistatus
+            - assessment_response_status_denied
+            - assessment_response_status_unknown
+          description: |
+            Mapping:
+
+            - approved: All items are approved
+            - needs_consent: Some or all items require consent
+            - multistatus: None of the items require consent but some items are approved and others are denied because of user action (opt-out) or policy rule
+            - denied: Approval is denied for all items
+            - unknown: The status cannot be determined. This can happen if none of the requested items can be handled by the consent provider.
+        "assessment":
+          type: array
+          x-go-type: "[]*PrivacyV2Assessment"
+          x-go-type-skip-optional-pointer: true  
+          items:
+            $ref: '#/components/schemas/privacy.v2.assessment'
+    "privacy.v2.consent":
+      type: object
+      properties:
+        "id":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: Consent record identifier
+        "purposeId":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: Identifies the purpose-of-use for the item, such as "billing". If this is a document consent, the document ID is used here. For OAuth scopes, use "ibm-oauth-scope".
+        "accessTypeId":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: Identifies the access type, such as "read".
+        "attributeId":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: Identifies the attribute, such as "email".
+        "attributeValue":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: Attribute value to narrow the consent being requested, such as permission to use a specific email address.
+        "startTime":
+          type: integer
+          x-go-type: int64
+          x-go-type-skip-optional-pointer: true
+          description: The time since Epoch (in seconds) that indicates when the consent becomes active.
+        "endTime":
+          type: integer
+          x-go-type: int64
+          x-go-type-skip-optional-pointer: true
+          description: The time since Epoch (in seconds) that indicates when the consent expires.
+        "isGlobal":
+          type: boolean
+          x-omitempty: false
+          x-go-type-skip-optional-pointer: true
+          description: Indicates if the consent applies to all applications.
+        "status":
+          $ref: '#/components/schemas/privacy.v2.consent_status_types'
+          description: Status of the consent.
+        "state": 
+          $ref: '#/components/schemas/privacy.v2.consent_types'
+          description: Consent type provided by the user.
+        "geoIP":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: IP address of the client where the consent is recorded.
+        "customAttributes":
+          type: object
+          x-go-type-skip-optional-pointer: true
+          description: Optional attributes recorded with the consent. The format is a standard JSON object, where the property key is the attribute name and the value is any type.
+          additionalProperties:
+            type: string
+            x-go-type-skip-optional-pointer: true
+        "subjectId":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: Identifies the subject who consented.
+        "isExternalSubject":
+          type: boolean
+          x-omitempty: false
+          x-go-type-skip-optional-pointer: true
+          description: Identifies if the subject is external to Verify and has no record in Cloud Directory.
+    "privacy.v2.metadata_consent":
+      type: object
+      properties:
+        "startTime":
+          type: integer
+          x-go-type: int64
+          x-go-type-skip-optional-pointer: true
+          description: The time since Epoch (in seconds) that indicates when the consent becomes active.
+        "endTime":
+          type: integer
+          x-go-type: int64
+          x-go-type-skip-optional-pointer: true
+          description: The time since Epoch (in seconds) that indicates when the consent expires.
+        "isGlobal":
+          type: boolean
+          x-omitempty: false
+          x-go-type-skip-optional-pointer: true
+          description: Indicates if the consent applies to all applications.
+        "state": 
+          $ref: '#/components/schemas/privacy.v2.consent_types'
+          description: Consent type provided by the user.
+        "geoIP":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: IP address of the client where the consent is recorded.
+        "customAttributes":
+          type: object
+          x-go-type-skip-optional-pointer: true
+          description: Optional attributes recorded with the consent. The format is a standard JSON object, where the property key is the attribute name and the value is any type.
+        "subjectId":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: Identifies the subject who consented.
+        "isExternalSubject":
+          type: boolean
+          x-omitempty: false
+          x-go-type-skip-optional-pointer: true
+          description: Identifies if the subject is external to Verify and has no record in Cloud Directory.
+    "privacy.v2.doc_metadata_record":
+      type: object
+      properties:
+        "purposeId":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: The identifier of the document.
+        "purposeName":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: The friendly name of the document.
+        "purposeDescription":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: Help text that explains the document.
+        "defaultConsentDuration":
+          type: integer
+          x-go-type-skip-optional-pointer: true
+          description: The default duration configured for user consent.
+        "assentUIDefault":
+          type: boolean
+          x-omitempty: false
+          x-go-type-skip-optional-pointer: true
+          description: Indicates if the consent prompt should default the selection to "accepted".
+        "consentType":
+          $ref: '#/components/schemas/privacy.v2.consent_display_types'
+          description: Indicates the type of consent that is expected to be collected, which would impact how the consent prompt is presented. For example, a transparent type consent prompt may not show a checkbox at all.
+        "documentURL":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: A link to the document.
+        "status":
+          $ref: '#/components/schemas/privacy.v2.consent_status_types'
+          description: The current status of consent.
+        "consent":
+          $ref: '#/components/schemas/privacy.v2.metadata_consent'
+          description: The user consent record that may or may not be active. "status" indicates the state of the consent.
+    "privacy.v2.default_metadata_record":
+      type: object
+      properties:
+        "purposeId":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: The identifier of the document.
+        "purposeName":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: The friendly name of the document.
+        "purposeDescription":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: Help text that explains the purpose-of-use.
+        "accessTypeId":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: Access type that is requested, such as "read".
+        "accessType":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: The friendly name of the access type.
+        "attributeId":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: Attribute that is requested, such as "email".
+        "attributeName":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: The friendly name of the attribute.
+        "attributeValue":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: Attribute value that is requested, such as permission to use a specific email address.
+        "defaultConsentDuration":
+          type: integer
+          x-go-type-skip-optional-pointer: true
+          description: The default duration configured for user consent.
+        "assentUIDefault":
+          type: boolean
+          x-omitempty: false
+          x-go-type-skip-optional-pointer: true
+          description: Indicates if the consent prompt should default the selection to "accepted".
+        "consentType":
+          $ref: '#/components/schemas/privacy.v2.consent_display_types'
+          description: Indicates the type of consent that is expected to be collected, which would impact how the consent prompt is presented. For example, a transparent type consent prompt may not show a checkbox at all.
+        "status":
+          $ref: '#/components/schemas/privacy.v2.consent_status_types'
+          description: The current status of consent.
+        "consent":
+          $ref: '#/components/schemas/privacy.v2.metadata_consent'
+          description: The user consent record that may or may not be active. "status" indicates the state of the consent.
+    "privacy.v2.metadata":
+      type: object
+      properties:
+        "document":
+          type: array
+          x-go-type: "[]*PrivacyV2DocMetadataRecord"
+          x-go-type-skip-optional-pointer: true
+          items:
+            $ref: '#/components/schemas/privacy.v2.doc_metadata_record'
+        "default":
+          type: array
+          x-go-type: "[]*PrivacyV2DefaultMetadataRecord"
+          x-go-type-skip-optional-pointer: true
+          items:
+            $ref: '#/components/schemas/privacy.v2.default_metadata_record'
+    "privacy.v2.metadata_request":
+      type: object
+      properties:
+        "subjectId":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          minLength: 1
+          description: Identifies the subject that the consent is associated with.
+        "isExternalSubject":
+          type: boolean
+          x-omitempty: false
+          x-go-type-skip-optional-pointer: true
+          description: Identifies if the subject is a Verify user. This is not checked for external consent provider integrations.
+        "geoIP":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: Client IP address making this request. If this is not provided, the client IP address is computed using the corresponding header(s) used by Verify to identify the client IP.
+        "items":
+          type: array
+          x-go-type: "[]*PrivacyV2RequestItem"
+          x-go-type-skip-optional-pointer: true
+          items:
+            $ref: '#/components/schemas/privacy.v2.request_item'
+        "sys":
+          $ref: '#/components/schemas/privacy.v2.system_options'
+    "privacy.v2.metadata_response":
+      type: object
+      properties:
+        "metadata":
+          $ref: '#/components/schemas/privacy.v2.metadata'
+        "unhandled":
+          type: array
+          description: Items that are not handled by the consent provider are added to this list.
+          x-go-type: "[]*PrivacyV2RequestItem"
+          x-go-type-skip-optional-pointer: true
+          items:
+            $ref: '#/components/schemas/privacy.v2.request_item'
+    "privacy.v2.store_consent_result":
+      type: object
+      properties:
+        "result":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          enum:
+            - success
+            - failure
+          x-enum-varnames:
+            - store_consent_result_status_success
+            - store_consent_result_status_failure
+          description: |
+            Mapping:
+
+            - success: Consent saved successfully
+            - failure: Consent not saved
+        "path":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: contains the URI to the consent object.
+        "consent":
+          $ref: '#/components/schemas/privacy.v2.consent'
+          description: contains the consent details but is only included if the request explicitly requests for this.
+        "error":
+          $ref: '#/components/schemas/privacy.v2.error'
+    "privacy.v2.store_consent":
+      type: object
+      properties:
+        "purposeId":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: Identifies the purpose-of-use for the item, such as "billing". If this is a document consent, the document ID is used here. For OAuth scopes, use "ibm-oauth-scope".
+        "accessTypeId":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: Identifies the access type, such as "read".
+        "attributeId":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: Identifies the attribute, such as "email".
+        "attributeValue":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: Attribute value to narrow the consent being requested, such as permission to use a specific email address.
+        "startTime":
+          type: integer
+          x-go-type: int64
+          x-go-type-skip-optional-pointer: true
+          description: The time since Epoch (in seconds) that indicates when the consent becomes active.
+        "endTime":
+          type: integer
+          x-go-type: int64
+          x-go-type-skip-optional-pointer: true
+          description: The time since Epoch (in seconds) that indicates when the consent expires.
+        "isGlobal":
+          type: boolean
+          x-omitempty: false
+          x-go-type-skip-optional-pointer: true
+          description: Indicates if the consent applies to all applications.
+        "status":
+          $ref: '#/components/schemas/privacy.v2.consent_status_types'
+          description: Status of the consent.
+        "state": 
+          $ref: '#/components/schemas/privacy.v2.consent_types'
+          description: Consent type provided by the user.
+        "customAttributes":
+          type: object
+          x-go-type-skip-optional-pointer: true
+          description: Optional attributes recorded with the consent. The format is a standard JSON object, where the property key is the attribute name and the value is any type.
+    "privacy.v2.store_consents_request":
+      type: object
+      properties:
+        "subjectId":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          minLength: 1
+          description: Identifies the subject that the consent is associated with. The consent object may override this value.
+        "isExternalSubject":
+          type: boolean
+          x-omitempty: false
+          x-go-type-skip-optional-pointer: true
+          description: Identifies if the subject is a Verify user. The consent object may override this value. This is not checked for external consent provider integrations.
+        "geoIP":
+          type: string
+          x-go-type-skip-optional-pointer: true
+          description: Client IP address making this request. If this is not provided, the client IP address is computed using the corresponding header(s) used by Verify to identify the client IP. The consent object may override this value.
+        "consents":
+          type: array
+          x-go-type: "[]*PrivacyV2StoreConsent"
+          x-go-type-skip-optional-pointer: true
+          items:
+            $ref: '#/components/schemas/privacy.v2.store_consent'
+        "sys":
+          $ref: '#/components/schemas/privacy.v2.system_options'
+    "privacy.v2.store_consents_response":
+      type: object
+      properties:
+        "results":
+          type: array
+          x-go-type: "[]*PrivacyV2StoreConsentResult"
+          x-go-type-skip-optional-pointer: true
+          items:
+            $ref: '#/components/schemas/privacy.v2.store_consent_result'
+paths:
+  /v1.0/basic/assessment:
+    post:
+      operationId: assessBasicPrivacy
+      summary: Assess privacy requirements for a subject
+      security:
+        - {}
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/privacy.v2.assessment_request'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/privacy.v2.assessment_response'
+          description: Assessment results are provided
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/privacy.v2.error'
+          description: Error object that contains details of why the request failed.
+        '500':
+          description: Internal error occurred in the system.
+  /v1.0/basic/page_metadata:
+    post:
+      operationId: getBasicPageMetadata
+      summary: Get consent presentation metadata
+      security:
+        - {}
+      parameters:
+        - name: accept-language
+          in: header
+          description: The locale of content to receive in the response.
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/privacy.v2.metadata_request'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/privacy.v2.metadata_response'
+          description: Consent presentation metadata provided.
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/privacy.v2.error'
+          description: Error object that contains details of why the request failed.
+        '500':
+          description: Internal error occurred in the system.
+  /v1.0/basic/consents:
+    post:
+      operationId: storeBasicConsents
+      summary: Store user consent records
+      security:
+        - {}
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/privacy.v2.consent'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/privacy.v2.store_consents_response'
+          description: Result of consent storage.
+        '207':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/privacy.v2.store_consents_response'
+          description: Not all consents are successfully added or updated.
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/privacy.v2.error'
+          description: Error object that contains details of why the request failed.
+        '500':
+          description: Internal error occurred in the system.
+  /v1.0/verify/assessment:
+    post:
+      operationId: assessVerifyPrivacy
+      summary: Assess privacy requirements for a subject in IBM Verify
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/privacy.v2.assessment_request'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/privacy.v2.assessment_response'
+          description: Assessment results are provided
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/privacy.v2.error'
+          description: Error object that contains details of why the request failed.
+        '500':
+          description: Internal error occurred in the system.
+  /v1.0/verify/page_metadata:
+    post:
+      operationId: getVerifyPageMetadata
+      summary: Get consent presentation metadata from IBM Verify
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: accept-language
+          in: header
+          description: The locale of content to receive in the response.
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/privacy.v2.metadata_request'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/privacy.v2.metadata_response'
+          description: Consent presentation metadata provided.
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/privacy.v2.error'
+          description: Error object that contains details of why the request failed.
+        '500':
+          description: Internal error occurred in the system.
+  /v1.0/verify/consents:
+    post:
+      operationId: storeVerifyConsents
+      summary: Store user consent records in IBM Verify
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/privacy.v2.consent'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/privacy.v2.store_consents_response'
+          description: Result of consent storage.
+        '207':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/privacy.v2.store_consents_response'
+          description: Not all consents are successfully added or updated.
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/privacy.v2.error'
+          description: Error object that contains details of why the request failed.
+        '500':
+          description: Internal error occurred in the system.
