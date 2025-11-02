@@ -1,11 +1,19 @@
 /**
- * Response logging middleware for debugging
+ * Request and Response logging middleware for debugging
  */
 
 /**
- * Middleware to log response headers and body
+ * Middleware to log request and response headers and body
  */
 const logResponse = (req, res, next) => {
+  // Log request details
+  console.log('\n=== Request Details ===');
+  console.log('Method:', req.method);
+  console.log('Path:', req.path);
+  console.log('Headers:', JSON.stringify(req.headers, null, 2));
+  console.log('Body:', JSON.stringify(req.body, null, 2));
+  console.log('=======================\n');
+  
   // Store the original send function
   const originalSend = res.send;
   const originalJson = res.json;

@@ -10,11 +10,18 @@ Three configuration steps are required:
 2. Create a consent provider referencing the webhook
 3. Update your OIDC application with the consent provider
 
+The outcome of this configuration will allow an OIDC application to use the Node.js application as an external consent provider. While the Node.js application also supports a IBM Verify consent store, note that this does not necessarily have to be the same tenant that your OIDC application uses as the identity provider.
+
+The diagram below illustrates this.
+
+![External consent provider architecture](images/architecture.png)
+
 ## Prerequisites
 
 - IBM Verify tenant with administrative access
-- Valid access token with appropriate scopes
+- Valid access token issued by the IBM Verify tenant that is configured in the `.env` file of the Node.js application
 - This Node.js application running and accessible
+  - If you are running this application locally, you can use ngrok and other such tools to make the application accessible through the Internet. This is for development purposes ONLY.
 - OAuth client credentials for webhook authentication
 
 ## Configuration Steps

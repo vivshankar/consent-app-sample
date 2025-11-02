@@ -177,7 +177,6 @@ const handleAssessment = async (req, res, next) => {
         });
       }
       
-      console.log(`DEBUG: assessmentResponse=\n${JSON.stringify(response, null, 2)}`);
       return response;
     };
     
@@ -263,7 +262,6 @@ const handlePageMetadata = async (req, res, next) => {
  */
 const processConsentStoreResponse = (storeResponse) => {
   if (storeResponse.results) {
-    console.log(`DEBUG: going to map`);
     storeResponse.results.forEach(result => {
       if (result.value) {
         result.value.state = ExternalConsentTypes[result.value.state];
@@ -290,7 +288,6 @@ const processConsentStoreResponse = (storeResponse) => {
     });
   }
   
-  console.log(`DEBUG: storeResponse=\n${JSON.stringify(storeResponse, null, 2)}`);
   return storeResponse;
 };
 
@@ -357,7 +354,6 @@ const handleConsents = async (req, res, next) => {
     // Validate request
     const validationError = validateConsentsRequest(consents);
     if (validationError) {
-      console.log(`Invalid request with body:\n${JSON.stringify(req.body)}`);
       const error = new Error(validationError.message);
       error.statusCode = validationError.statusCode;
       error.messageId = validationError.messageId;
