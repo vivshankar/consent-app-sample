@@ -43,6 +43,19 @@ There are two implementations:
 
 The server will start on port 3000 by default. You can change this by setting the `PORT` environment variable.
 
+### Obtaining IBM Verify credentials
+
+Note that the IBM Verify instance configured here serves a dual purpose -
+
+1. As a consent management system and store invoked through the /v1.0/verify/* APIs.
+2. As an OAuth server that issues tokens to authorize calls into the /v1.0/verify/* APIs.
+
+In order to obtain an appropriate API client ID and secret, you will need to [create an API Client](https://docs.verify.ibm.com/verify/docs/support-developers-create-api-client) on your IBM Verify tenant. You will need the following entitlements:
+
+- Create privacy consent records (createPrivacyConsent)
+- Retrieve privacy purposes and associated user's consent (performDSP)
+- Check for data usage approval (performDUA)
+
 ## API Endpoints
 
 ### Basic Endpoints (In-memory storage)
