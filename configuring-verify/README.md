@@ -19,7 +19,7 @@ The diagram below illustrates this.
 ## Prerequisites
 
 - IBM Verify tenant with administrative access
-- Valid access token issued by the IBM Verify tenant that is configured in the `.env` file of the Node.js application. The access token must have the following entitlements:
+- Valid access token issued by the IBM Verify tenant that is configured in the `.env` file of the Node.js application
 - This Node.js application running and accessible
   - If you are running this application locally, you can use ngrok and other such tools to make the application accessible through the Internet. This is for development purposes ONLY.
 - API client credentials for webhook authentication: This just needs to be a valid token, so any API client on the IBM Verify tenant can be used
