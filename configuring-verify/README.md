@@ -19,10 +19,16 @@ The diagram below illustrates this.
 ## Prerequisites
 
 - IBM Verify tenant with administrative access
-- Valid access token issued by the IBM Verify tenant that is configured in the `.env` file of the Node.js application
+- Valid access token issued by the IBM Verify tenant that is configured in the `.env` file of the Node.js application. The access token must have the following entitlements:
 - This Node.js application running and accessible
   - If you are running this application locally, you can use ngrok and other such tools to make the application accessible through the Internet. This is for development purposes ONLY.
-- OAuth client credentials for webhook authentication
+- API client credentials for webhook authentication: This just needs to be a valid token, so any API client on the IBM Verify tenant can be used
+- API client credentials for the Postman collection: This requires the following entitlements -
+  - Manage privacy consent providers (managePrivacyConsentProvider): This is for the Configuration section
+  - Manage webhooks (manageWebhooks): This is for the Configuration section
+  - Create privacy consent records (createPrivacyConsent): This is to test the runtime APIs
+  - Retrieve privacy purposes and associated user's consent (performDSP): This is to test the runtime APIs
+  - Check for data usage approval (performDUA): This is to test the runtime APIs
 
 ## Configuration Steps
 
