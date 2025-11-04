@@ -202,17 +202,944 @@
 				},
 				{
 					"name": "Consent provider",
-					"item": []
+					"item": [
+						{
+							"name": "Create consent provider",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-forwarded-host",
+										"value": "{{tenant}}",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Verify consent app\",\n    \"description\": \"\", \n    \"type\": \"webhook\", \n    \"integrationId\": \"the-webhook-id\",\n    \"profile\": {\n        \"restrictScopes\": true,\n        \"scopes\": [],\n        \"restrictPurposes\": true,\n        \"purposes\": [\"marketing\"] \n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://{{tenant}}/dpcm-mgmt/config/v1.0/privacy/consent-provider",
+									"protocol": "https",
+									"host": [
+										"{{tenant}}"
+									],
+									"path": [
+										"dpcm-mgmt",
+										"config",
+										"v1.0",
+										"privacy",
+										"consent-provider"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get consent providers",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-forwarded-host",
+										"value": "{{tenant}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Mock consent manager\",\n    \"description\": \"\", \n    \"type\": \"webhook\", \n    \"integrationId\": \"cc289409-11e7-4ca3-8b87-3d8f9c00fbd4\",\n    \"profile\": {\n        \"restrictScopes\": true,\n        \"scopes\": [],\n        \"restrictPurposes\": true,\n        \"purposes\": [\"marketing\"] \n    }\n}"
+								},
+								"url": {
+									"raw": "https://{{tenant}}/dpcm-mgmt/config/v1.0/privacy/consent-providers",
+									"protocol": "https",
+									"host": [
+										"{{tenant}}"
+									],
+									"path": [
+										"dpcm-mgmt",
+										"config",
+										"v1.0",
+										"privacy",
+										"consent-providers"
+									]
+								}
+							},
+							"response": []
+						}
+					]
 				},
 				{
 					"name": "Application",
-					"item": []
+					"item": [
+						{
+							"name": "Get application",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://{{tenant}}/appaccess/v1.0/applications/:id",
+									"protocol": "https",
+									"host": [
+										"{{tenant}}"
+									],
+									"path": [
+										"appaccess",
+										"v1.0",
+										"applications",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "4660571538533094929"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update application",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "// Replace with the body from the GET and add\n// consentProvider property to the additionalConfig object.\n// The value is the consent provider ID.",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://{{tenant}}/appaccess/v1.0/applications/:id",
+									"protocol": "https",
+									"host": [
+										"{{tenant}}"
+									],
+									"path": [
+										"appaccess",
+										"v1.0",
+										"applications",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "4660571538533094929"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
 				}
 			]
 		},
 		{
 			"name": "Runtime",
-			"item": []
+			"item": [
+				{
+					"name": "Obtain data usage approval",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"subjectId\": \"jhall@mailinator.com\",\n  \"isExternalSubject\": true,\n  \"geoIP\": \"129.41.56.2\",\n  \"items\": [\n    {\n      \"purposeId\": \"marketing\",\n      \"accessTypeId\": \"default\",\n      \"attributeId\": \"email\"\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{tenant}}/v2.0/privacy/providers/:id/data-usage-approval",
+							"protocol": "https",
+							"host": [
+								"{{tenant}}"
+							],
+							"path": [
+								"v2.0",
+								"privacy",
+								"providers",
+								":id",
+								"data-usage-approval"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "<string>",
+									"description": "(Required) External consent provider identifier registered on Verify."
+								}
+							]
+						},
+						"description": "Obtain data usage approval from an external provider.\n\n<b>Entitlements required:</b>\n<ul><li>performDUA (Check for data usage approval)</li></ul>\n"
+					},
+					"response": [
+						{
+							"name": "Assessment results are provided",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"subjectId\": \"<string>\",\n  \"isExternalSubject\": \"<boolean>\",\n  \"geoIP\": \"<string>\",\n  \"items\": [\n    {\n      \"profileId\": \"<string>\",\n      \"purposeId\": \"<string>\",\n      \"accessTypeId\": \"<string>\",\n      \"attributeId\": \"<string>\",\n      \"attributeValue\": \"<string>\"\n    },\n    {\n      \"profileId\": \"<string>\",\n      \"purposeId\": \"<string>\",\n      \"accessTypeId\": \"<string>\",\n      \"attributeId\": \"<string>\",\n      \"attributeValue\": \"<string>\"\n    }\n  ],\n  \"sys\": {\n    \"sources\": {},\n    \"trace\": \"<boolean>\",\n    \"traceVars\": {\n      \"in035\": \"<string>\"\n    }\n  }\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v2.0/privacy/providers/:id/data-usage-approval",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v2.0",
+										"privacy",
+										"providers",
+										":id",
+										"data-usage-approval"
+									],
+									"variable": [
+										{
+											"key": "id"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"status\": \"approved\",\n  \"assessment\": [\n    {\n      \"purposeId\": \"<string>\",\n      \"accessTypeId\": \"<string>\",\n      \"attributeId\": \"<string>\",\n      \"attributeValue\": \"<string>\",\n      \"result\": {\n        \"approved\": \"<boolean>\",\n        \"approvalRequired\": \"<boolean>\",\n        \"promptForConsent\": \"<boolean>\",\n        \"reason\": {\n          \"messageId\": \"<string>\",\n          \"messageDescription\": \"<string>\",\n          \"extraInfo\": \"<string>\"\n        }\n      }\n    },\n    {\n      \"purposeId\": \"<string>\",\n      \"accessTypeId\": \"<string>\",\n      \"attributeId\": \"<string>\",\n      \"attributeValue\": \"<string>\",\n      \"result\": {\n        \"approved\": \"<boolean>\",\n        \"approvalRequired\": \"<boolean>\",\n        \"promptForConsent\": \"<boolean>\",\n        \"reason\": {\n          \"messageId\": \"<string>\",\n          \"messageDescription\": \"<string>\",\n          \"extraInfo\": \"<string>\"\n        }\n      }\n    }\n  ]\n}"
+						},
+						{
+							"name": "Error object that contains details of why the request failed.",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"subjectId\": \"<string>\",\n  \"isExternalSubject\": \"<boolean>\",\n  \"geoIP\": \"<string>\",\n  \"items\": [\n    {\n      \"profileId\": \"<string>\",\n      \"purposeId\": \"<string>\",\n      \"accessTypeId\": \"<string>\",\n      \"attributeId\": \"<string>\",\n      \"attributeValue\": \"<string>\"\n    },\n    {\n      \"profileId\": \"<string>\",\n      \"purposeId\": \"<string>\",\n      \"accessTypeId\": \"<string>\",\n      \"attributeId\": \"<string>\",\n      \"attributeValue\": \"<string>\"\n    }\n  ],\n  \"sys\": {\n    \"sources\": {},\n    \"trace\": \"<boolean>\",\n    \"traceVars\": {\n      \"in035\": \"<string>\"\n    }\n  }\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v2.0/privacy/providers/:id/data-usage-approval",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v2.0",
+										"privacy",
+										"providers",
+										":id",
+										"data-usage-approval"
+									],
+									"variable": [
+										{
+											"key": "id"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"messageId\": \"<string>\",\n  \"messageDescription\": \"<string>\",\n  \"extraInfo\": \"<string>\"\n}"
+						},
+						{
+							"name": "Internal error occurred in the system.",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"subjectId\": \"<string>\",\n  \"isExternalSubject\": \"<boolean>\",\n  \"geoIP\": \"<string>\",\n  \"items\": [\n    {\n      \"profileId\": \"<string>\",\n      \"purposeId\": \"<string>\",\n      \"accessTypeId\": \"<string>\",\n      \"attributeId\": \"<string>\",\n      \"attributeValue\": \"<string>\"\n    },\n    {\n      \"profileId\": \"<string>\",\n      \"purposeId\": \"<string>\",\n      \"accessTypeId\": \"<string>\",\n      \"attributeId\": \"<string>\",\n      \"attributeValue\": \"<string>\"\n    }\n  ],\n  \"sys\": {\n    \"sources\": {},\n    \"trace\": \"<boolean>\",\n    \"traceVars\": {\n      \"in035\": \"<string>\"\n    }\n  }\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v2.0/privacy/providers/:id/data-usage-approval",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v2.0",
+										"privacy",
+										"providers",
+										":id",
+										"data-usage-approval"
+									],
+									"variable": [
+										{
+											"key": "id"
+										}
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "text",
+							"header": [],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				},
+				{
+					"name": "Obtain data subject presentation details",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "accept-language",
+								"value": "<string>",
+								"description": "The locale of content to receive in the response."
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"subjectId\": \"jhall@mailinator.com\",\n  \"isExternalSubject\": true,\n  \"geoIP\": \"129.41.56.2\",\n  \"items\": [\n    {\n      \"purposeId\": \"marketing\",\n      \"accessTypeId\": \"default\",\n      \"attributeId\": \"email\"\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{tenant}}/v2.0/privacy/providers/:id/data-subject-presentation",
+							"protocol": "https",
+							"host": [
+								"{{tenant}}"
+							],
+							"path": [
+								"v2.0",
+								"privacy",
+								"providers",
+								":id",
+								"data-subject-presentation"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "e1043928-9b5b-40ac-97d3-ddd7f27ee24c",
+									"description": "(Required) External consent provider identifier registered on Verify."
+								}
+							]
+						},
+						"description": "Obtain data subject presentation details from an external provider to build the appropriate user experience.\n\n<b>Entitlements required:</b>\n<ul><li>performDSP (Retrieve consent metadata and any previously consented records)</li></ul>\n"
+					},
+					"response": [
+						{
+							"name": "Consent presentation metadata provided.",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "accept-language",
+										"value": "<string>",
+										"description": "The locale of content to receive in the response."
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"subjectId\": \"<string>\",\n  \"isExternalSubject\": \"<boolean>\",\n  \"geoIP\": \"<string>\",\n  \"items\": [\n    {\n      \"profileId\": \"<string>\",\n      \"purposeId\": \"<string>\",\n      \"accessTypeId\": \"<string>\",\n      \"attributeId\": \"<string>\",\n      \"attributeValue\": \"<string>\"\n    },\n    {\n      \"profileId\": \"<string>\",\n      \"purposeId\": \"<string>\",\n      \"accessTypeId\": \"<string>\",\n      \"attributeId\": \"<string>\",\n      \"attributeValue\": \"<string>\"\n    }\n  ],\n  \"sys\": {\n    \"sources\": {},\n    \"trace\": \"<boolean>\",\n    \"traceVars\": {\n      \"in035\": \"<string>\"\n    }\n  }\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v2.0/privacy/providers/:id/data-subject-presentation",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v2.0",
+										"privacy",
+										"providers",
+										":id",
+										"data-subject-presentation"
+									],
+									"variable": [
+										{
+											"key": "id"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"metadata\": {\n    \"document\": [\n      {\n        \"purposeId\": \"<string>\",\n        \"purposeName\": \"<string>\",\n        \"purposeDescription\": \"<string>\",\n        \"defaultConsentDuration\": \"<integer>\",\n        \"assentUIDefault\": \"<boolean>\",\n        \"consentType\": \"allow_or_deny\",\n        \"documentURL\": \"<string>\",\n        \"status\": \"active\",\n        \"consent\": {\n          \"startTime\": \"<integer>\",\n          \"endTime\": \"<integer>\",\n          \"isGlobal\": \"<boolean>\",\n          \"state\": \"transparent\",\n          \"geoIP\": \"<string>\",\n          \"customAttributes\": {},\n          \"subjectId\": \"<string>\",\n          \"isExternalSubject\": \"<boolean>\"\n        }\n      },\n      {\n        \"purposeId\": \"<string>\",\n        \"purposeName\": \"<string>\",\n        \"purposeDescription\": \"<string>\",\n        \"defaultConsentDuration\": \"<integer>\",\n        \"assentUIDefault\": \"<boolean>\",\n        \"consentType\": \"allow_or_deny\",\n        \"documentURL\": \"<string>\",\n        \"status\": \"none\",\n        \"consent\": {\n          \"startTime\": \"<integer>\",\n          \"endTime\": \"<integer>\",\n          \"isGlobal\": \"<boolean>\",\n          \"state\": \"deny\",\n          \"geoIP\": \"<string>\",\n          \"customAttributes\": {},\n          \"subjectId\": \"<string>\",\n          \"isExternalSubject\": \"<boolean>\"\n        }\n      }\n    ],\n    \"default\": [\n      {\n        \"purposeId\": \"<string>\",\n        \"purposeName\": \"<string>\",\n        \"purposeDescription\": \"<string>\",\n        \"accessTypeId\": \"<string>\",\n        \"accessType\": \"<string>\",\n        \"attributeId\": \"<string>\",\n        \"attributeName\": \"<string>\",\n        \"attributeValue\": \"<string>\",\n        \"defaultConsentDuration\": \"<integer>\",\n        \"assentUIDefault\": \"<boolean>\",\n        \"consentType\": \"allow_or_deny\",\n        \"status\": \"future\",\n        \"consent\": {\n          \"startTime\": \"<integer>\",\n          \"endTime\": \"<integer>\",\n          \"isGlobal\": \"<boolean>\",\n          \"state\": \"transparent\",\n          \"geoIP\": \"<string>\",\n          \"customAttributes\": {},\n          \"subjectId\": \"<string>\",\n          \"isExternalSubject\": \"<boolean>\"\n        }\n      },\n      {\n        \"purposeId\": \"<string>\",\n        \"purposeName\": \"<string>\",\n        \"purposeDescription\": \"<string>\",\n        \"accessTypeId\": \"<string>\",\n        \"accessType\": \"<string>\",\n        \"attributeId\": \"<string>\",\n        \"attributeName\": \"<string>\",\n        \"attributeValue\": \"<string>\",\n        \"defaultConsentDuration\": \"<integer>\",\n        \"assentUIDefault\": \"<boolean>\",\n        \"consentType\": \"allow_or_deny\",\n        \"status\": \"future\",\n        \"consent\": {\n          \"startTime\": \"<integer>\",\n          \"endTime\": \"<integer>\",\n          \"isGlobal\": \"<boolean>\",\n          \"state\": \"deny\",\n          \"geoIP\": \"<string>\",\n          \"customAttributes\": {},\n          \"subjectId\": \"<string>\",\n          \"isExternalSubject\": \"<boolean>\"\n        }\n      }\n    ]\n  },\n  \"unhandled\": [\n    {\n      \"profileId\": \"<string>\",\n      \"purposeId\": \"<string>\",\n      \"accessTypeId\": \"<string>\",\n      \"attributeId\": \"<string>\",\n      \"attributeValue\": \"<string>\"\n    },\n    {\n      \"profileId\": \"<string>\",\n      \"purposeId\": \"<string>\",\n      \"accessTypeId\": \"<string>\",\n      \"attributeId\": \"<string>\",\n      \"attributeValue\": \"<string>\"\n    }\n  ]\n}"
+						},
+						{
+							"name": "Error object that contains details of why the request failed.",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "accept-language",
+										"value": "<string>",
+										"description": "The locale of content to receive in the response."
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"subjectId\": \"<string>\",\n  \"isExternalSubject\": \"<boolean>\",\n  \"geoIP\": \"<string>\",\n  \"items\": [\n    {\n      \"profileId\": \"<string>\",\n      \"purposeId\": \"<string>\",\n      \"accessTypeId\": \"<string>\",\n      \"attributeId\": \"<string>\",\n      \"attributeValue\": \"<string>\"\n    },\n    {\n      \"profileId\": \"<string>\",\n      \"purposeId\": \"<string>\",\n      \"accessTypeId\": \"<string>\",\n      \"attributeId\": \"<string>\",\n      \"attributeValue\": \"<string>\"\n    }\n  ],\n  \"sys\": {\n    \"sources\": {},\n    \"trace\": \"<boolean>\",\n    \"traceVars\": {\n      \"in035\": \"<string>\"\n    }\n  }\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v2.0/privacy/providers/:id/data-subject-presentation",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v2.0",
+										"privacy",
+										"providers",
+										":id",
+										"data-subject-presentation"
+									],
+									"variable": [
+										{
+											"key": "id"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"messageId\": \"<string>\",\n  \"messageDescription\": \"<string>\",\n  \"extraInfo\": \"<string>\"\n}"
+						},
+						{
+							"name": "Internal error occurred in the system.",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "accept-language",
+										"value": "<string>",
+										"description": "The locale of content to receive in the response."
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"subjectId\": \"<string>\",\n  \"isExternalSubject\": \"<boolean>\",\n  \"geoIP\": \"<string>\",\n  \"items\": [\n    {\n      \"profileId\": \"<string>\",\n      \"purposeId\": \"<string>\",\n      \"accessTypeId\": \"<string>\",\n      \"attributeId\": \"<string>\",\n      \"attributeValue\": \"<string>\"\n    },\n    {\n      \"profileId\": \"<string>\",\n      \"purposeId\": \"<string>\",\n      \"accessTypeId\": \"<string>\",\n      \"attributeId\": \"<string>\",\n      \"attributeValue\": \"<string>\"\n    }\n  ],\n  \"sys\": {\n    \"sources\": {},\n    \"trace\": \"<boolean>\",\n    \"traceVars\": {\n      \"in035\": \"<string>\"\n    }\n  }\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v2.0/privacy/providers/:id/data-subject-presentation",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v2.0",
+										"privacy",
+										"providers",
+										":id",
+										"data-subject-presentation"
+									],
+									"variable": [
+										{
+											"key": "id"
+										}
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "text",
+							"header": [],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				},
+				{
+					"name": "Store consents",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"subjectId\": \"jhall@mailinator.com\",\n    \"isExternalSubject\": true,\n    \"geoIP\": \"129.41.56.2\",\n    \"consents\": [\n        {\n            \"purposeId\": \"marketin1\",\n            \"accessTypeId\": \"default\",\n            \"attributeId\": \"email\",\n            \"isGlobal\": true,\n            \"state\": \"allow\"\n        },\n        {\n            \"purposeId\": \"marketing\",\n            \"accessTypeId\": \"default\",\n            \"attributeId\": \"email\",\n            \"isGlobal\": true,\n            \"state\": \"allow\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{tenant}}/v2.0/privacy/providers/:id/consents?includeConsents=true",
+							"protocol": "https",
+							"host": [
+								"{{tenant}}"
+							],
+							"path": [
+								"v2.0",
+								"privacy",
+								"providers",
+								":id",
+								"consents"
+							],
+							"query": [
+								{
+									"key": "includeConsents",
+									"value": "true",
+									"description": "Indicates if the consent objects should be returned when the operation is successful."
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "e1043928-9b5b-40ac-97d3-ddd7f27ee24c",
+									"description": "(Required) External consent provider identifier registered on Verify."
+								}
+							]
+						},
+						"description": "Store consents in the external provider.\n\n<b>Entitlements required:</b>\n<ul><li>createPrivacyConsent (Create privacy consent records)</li></ul>\n"
+					},
+					"response": [
+						{
+							"name": "All consents are successfully added or updated.",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"subjectId\": \"<string>\",\n  \"isExternalSubject\": \"<boolean>\",\n  \"geoIP\": \"<string>\",\n  \"consents\": [\n    {\n      \"purposeId\": \"<string>\",\n      \"accessTypeId\": \"<string>\",\n      \"attributeId\": \"<string>\",\n      \"attributeValue\": \"<string>\",\n      \"startTime\": \"<integer>\",\n      \"endTime\": \"<integer>\",\n      \"isGlobal\": \"<boolean>\",\n      \"status\": \"none\",\n      \"state\": \"opt_in\",\n      \"customAttributes\": {}\n    },\n    {\n      \"purposeId\": \"<string>\",\n      \"accessTypeId\": \"<string>\",\n      \"attributeId\": \"<string>\",\n      \"attributeValue\": \"<string>\",\n      \"startTime\": \"<integer>\",\n      \"endTime\": \"<integer>\",\n      \"isGlobal\": \"<boolean>\",\n      \"status\": \"active\",\n      \"state\": \"transparent\",\n      \"customAttributes\": {}\n    }\n  ],\n  \"sys\": {\n    \"sources\": {},\n    \"trace\": \"<boolean>\",\n    \"traceVars\": {\n      \"enim_ca_\": \"<string>\",\n      \"esse_87e\": \"<string>\"\n    }\n  }\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v2.0/privacy/providers/:id/consents?includeConsents=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v2.0",
+										"privacy",
+										"providers",
+										":id",
+										"consents"
+									],
+									"query": [
+										{
+											"key": "includeConsents",
+											"value": "<string>",
+											"description": "Indicates if the consent objects should be returned when the operation is successful."
+										}
+									],
+									"variable": [
+										{
+											"key": "id"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"results\": [\n    {\n      \"result\": \"failure\",\n      \"path\": \"<string>\",\n      \"consent\": {\n        \"id\": \"<string>\",\n        \"purposeId\": \"<string>\",\n        \"accessTypeId\": \"<string>\",\n        \"attributeId\": \"<string>\",\n        \"attributeValue\": \"<string>\",\n        \"startTime\": \"<integer>\",\n        \"endTime\": \"<integer>\",\n        \"isGlobal\": \"<boolean>\",\n        \"status\": \"none\",\n        \"state\": \"allow\",\n        \"geoIP\": \"<string>\",\n        \"customAttributes\": {\n          \"ipsuma\": \"<string>\",\n          \"cillume\": \"<string>\"\n        },\n        \"subjectId\": \"<string>\",\n        \"isExternalSubject\": \"<boolean>\"\n      },\n      \"error\": {\n        \"messageId\": \"<string>\",\n        \"messageDescription\": \"<string>\",\n        \"extraInfo\": \"<string>\"\n      }\n    },\n    {\n      \"result\": \"success\",\n      \"path\": \"<string>\",\n      \"consent\": {\n        \"id\": \"<string>\",\n        \"purposeId\": \"<string>\",\n        \"accessTypeId\": \"<string>\",\n        \"attributeId\": \"<string>\",\n        \"attributeValue\": \"<string>\",\n        \"startTime\": \"<integer>\",\n        \"endTime\": \"<integer>\",\n        \"isGlobal\": \"<boolean>\",\n        \"status\": \"active\",\n        \"state\": \"transparent\",\n        \"geoIP\": \"<string>\",\n        \"customAttributes\": {\n          \"sit236\": \"<string>\"\n        },\n        \"subjectId\": \"<string>\",\n        \"isExternalSubject\": \"<boolean>\"\n      },\n      \"error\": {\n        \"messageId\": \"<string>\",\n        \"messageDescription\": \"<string>\",\n        \"extraInfo\": \"<string>\"\n      }\n    }\n  ]\n}"
+						},
+						{
+							"name": "Not all consents are successfully added or updated.",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"subjectId\": \"<string>\",\n  \"isExternalSubject\": \"<boolean>\",\n  \"geoIP\": \"<string>\",\n  \"consents\": [\n    {\n      \"purposeId\": \"<string>\",\n      \"accessTypeId\": \"<string>\",\n      \"attributeId\": \"<string>\",\n      \"attributeValue\": \"<string>\",\n      \"startTime\": \"<integer>\",\n      \"endTime\": \"<integer>\",\n      \"isGlobal\": \"<boolean>\",\n      \"status\": \"none\",\n      \"state\": \"opt_in\",\n      \"customAttributes\": {}\n    },\n    {\n      \"purposeId\": \"<string>\",\n      \"accessTypeId\": \"<string>\",\n      \"attributeId\": \"<string>\",\n      \"attributeValue\": \"<string>\",\n      \"startTime\": \"<integer>\",\n      \"endTime\": \"<integer>\",\n      \"isGlobal\": \"<boolean>\",\n      \"status\": \"active\",\n      \"state\": \"transparent\",\n      \"customAttributes\": {}\n    }\n  ],\n  \"sys\": {\n    \"sources\": {},\n    \"trace\": \"<boolean>\",\n    \"traceVars\": {\n      \"enim_ca_\": \"<string>\",\n      \"esse_87e\": \"<string>\"\n    }\n  }\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v2.0/privacy/providers/:id/consents?includeConsents=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v2.0",
+										"privacy",
+										"providers",
+										":id",
+										"consents"
+									],
+									"query": [
+										{
+											"key": "includeConsents",
+											"value": "<string>",
+											"description": "Indicates if the consent objects should be returned when the operation is successful."
+										}
+									],
+									"variable": [
+										{
+											"key": "id"
+										}
+									]
+								}
+							},
+							"status": "Multi-Status (WebDAV) (RFC 4918)",
+							"code": 207,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"results\": [\n    {\n      \"result\": \"failure\",\n      \"path\": \"<string>\",\n      \"consent\": {\n        \"id\": \"<string>\",\n        \"purposeId\": \"<string>\",\n        \"accessTypeId\": \"<string>\",\n        \"attributeId\": \"<string>\",\n        \"attributeValue\": \"<string>\",\n        \"startTime\": \"<integer>\",\n        \"endTime\": \"<integer>\",\n        \"isGlobal\": \"<boolean>\",\n        \"status\": \"none\",\n        \"state\": \"allow\",\n        \"geoIP\": \"<string>\",\n        \"customAttributes\": {\n          \"ipsuma\": \"<string>\",\n          \"cillume\": \"<string>\"\n        },\n        \"subjectId\": \"<string>\",\n        \"isExternalSubject\": \"<boolean>\"\n      },\n      \"error\": {\n        \"messageId\": \"<string>\",\n        \"messageDescription\": \"<string>\",\n        \"extraInfo\": \"<string>\"\n      }\n    },\n    {\n      \"result\": \"success\",\n      \"path\": \"<string>\",\n      \"consent\": {\n        \"id\": \"<string>\",\n        \"purposeId\": \"<string>\",\n        \"accessTypeId\": \"<string>\",\n        \"attributeId\": \"<string>\",\n        \"attributeValue\": \"<string>\",\n        \"startTime\": \"<integer>\",\n        \"endTime\": \"<integer>\",\n        \"isGlobal\": \"<boolean>\",\n        \"status\": \"active\",\n        \"state\": \"transparent\",\n        \"geoIP\": \"<string>\",\n        \"customAttributes\": {\n          \"sit236\": \"<string>\"\n        },\n        \"subjectId\": \"<string>\",\n        \"isExternalSubject\": \"<boolean>\"\n      },\n      \"error\": {\n        \"messageId\": \"<string>\",\n        \"messageDescription\": \"<string>\",\n        \"extraInfo\": \"<string>\"\n      }\n    }\n  ]\n}"
+						},
+						{
+							"name": "Error object that contains details of why the request failed.",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"subjectId\": \"<string>\",\n  \"isExternalSubject\": \"<boolean>\",\n  \"geoIP\": \"<string>\",\n  \"consents\": [\n    {\n      \"purposeId\": \"<string>\",\n      \"accessTypeId\": \"<string>\",\n      \"attributeId\": \"<string>\",\n      \"attributeValue\": \"<string>\",\n      \"startTime\": \"<integer>\",\n      \"endTime\": \"<integer>\",\n      \"isGlobal\": \"<boolean>\",\n      \"status\": \"none\",\n      \"state\": \"opt_in\",\n      \"customAttributes\": {}\n    },\n    {\n      \"purposeId\": \"<string>\",\n      \"accessTypeId\": \"<string>\",\n      \"attributeId\": \"<string>\",\n      \"attributeValue\": \"<string>\",\n      \"startTime\": \"<integer>\",\n      \"endTime\": \"<integer>\",\n      \"isGlobal\": \"<boolean>\",\n      \"status\": \"active\",\n      \"state\": \"transparent\",\n      \"customAttributes\": {}\n    }\n  ],\n  \"sys\": {\n    \"sources\": {},\n    \"trace\": \"<boolean>\",\n    \"traceVars\": {\n      \"enim_ca_\": \"<string>\",\n      \"esse_87e\": \"<string>\"\n    }\n  }\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v2.0/privacy/providers/:id/consents?includeConsents=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v2.0",
+										"privacy",
+										"providers",
+										":id",
+										"consents"
+									],
+									"query": [
+										{
+											"key": "includeConsents",
+											"value": "<string>",
+											"description": "Indicates if the consent objects should be returned when the operation is successful."
+										}
+									],
+									"variable": [
+										{
+											"key": "id"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"messageId\": \"<string>\",\n  \"messageDescription\": \"<string>\",\n  \"extraInfo\": \"<string>\"\n}"
+						},
+						{
+							"name": "Internal error occurred in the system.",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"subjectId\": \"<string>\",\n  \"isExternalSubject\": \"<boolean>\",\n  \"geoIP\": \"<string>\",\n  \"consents\": [\n    {\n      \"purposeId\": \"<string>\",\n      \"accessTypeId\": \"<string>\",\n      \"attributeId\": \"<string>\",\n      \"attributeValue\": \"<string>\",\n      \"startTime\": \"<integer>\",\n      \"endTime\": \"<integer>\",\n      \"isGlobal\": \"<boolean>\",\n      \"status\": \"none\",\n      \"state\": \"opt_in\",\n      \"customAttributes\": {}\n    },\n    {\n      \"purposeId\": \"<string>\",\n      \"accessTypeId\": \"<string>\",\n      \"attributeId\": \"<string>\",\n      \"attributeValue\": \"<string>\",\n      \"startTime\": \"<integer>\",\n      \"endTime\": \"<integer>\",\n      \"isGlobal\": \"<boolean>\",\n      \"status\": \"active\",\n      \"state\": \"transparent\",\n      \"customAttributes\": {}\n    }\n  ],\n  \"sys\": {\n    \"sources\": {},\n    \"trace\": \"<boolean>\",\n    \"traceVars\": {\n      \"enim_ca_\": \"<string>\",\n      \"esse_87e\": \"<string>\"\n    }\n  }\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v2.0/privacy/providers/:id/consents?includeConsents=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v2.0",
+										"privacy",
+										"providers",
+										":id",
+										"consents"
+									],
+									"query": [
+										{
+											"key": "includeConsents",
+											"value": "<string>",
+											"description": "Indicates if the consent objects should be returned when the operation is successful."
+										}
+									],
+									"variable": [
+										{
+											"key": "id"
+										}
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "text",
+							"header": [],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				}
+			]
 		}
 	]
 }
