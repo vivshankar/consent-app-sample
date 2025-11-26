@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consent Request</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: #0f172a;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .container {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      max-width: 500px;
+      width: 100%;
+      padding: 40px;
+    }
+    
+    h1 {
+      color: #333;
+      font-size: 28px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    
+    .subtitle {
+      color: #666;
+      font-size: 14px;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .error-box {
+      background: #fee;
+      border-left: 4px solid #f44;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+      font-size: 14px;
+      color: #c33;
+      display: none;
+    }
+    
+    .info-box {
+      background: #f1f5f9;
+      border-left: 4px solid #3b82f6;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #475569;
+    }
+    
+    .scopes-container {
+      margin-bottom: 30px;
+    }
+    
+    .scope-item {
+      padding: 15px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      transition: all 0.2s ease;
+    }
+    
+    .scope-item:hover {
+      background-color: #f8fafc;
+      border-color: #3b82f6;
+    }
+    
+    .scope-item label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    
+    .scope-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      margin-right: 12px;
+      cursor: pointer;
+      accent-color: #3b82f6;
+    }
+    
+    .scope-label {
+      color: #333;
+      font-size: 16px;
+      flex: 1;
+    }
+    
+    .button-container {
+      display: flex;
+      gap: 10px;
+    }
+    
+    button {
+      flex: 1;
+      padding: 14px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .btn-approve {
+      background: #3b82f6;
+      color: white;
+    }
+    
+    .btn-approve:hover:not(:disabled) {
+      background: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.5);
+    }
+    
+    .btn-deny {
+      background: #f1f5f9;
+      color: #64748b;
+      border: 1px solid #e2e8f0;
+    }
+    
+    .btn-deny:hover:not(:disabled) {
+      background: #e2e8f0;
+      color: #475569;
+    }
+    
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+    }
+    
+    .spinner {
+      border: 4px solid #e2e8f0;
+      border-top: 4px solid #3b82f6;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    #consentForm {
+      display: block;
+    }
+    
+    #consentForm.hidden {
+      display: none;
+    }
+    
+    .loading.show {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔐 Consent Request</h1>
+    <p class="subtitle">Please review and approve the requested permissions</p>
+    
+    <div id="errorBox" class="error-box"></div>
+    
+    <div id="consentForm">
+      <div class="info-box">
+        Select the permissions you want to grant. You can approve or deny individual permissions.
+      </div>
+      
+      <div id="scopesContainer" class="scopes-container">
+        <!-- Scopes will be dynamically inserted here -->
+      </div>
+      
+      <div class="button-container">
+        <button type="button" class="btn-deny" id="denyAllBtn">Deny All</button>
+        <button type="button" class="btn-approve" id="submitBtn">Submit</button>
+      </div>
+    </div>
+    
+    <div id="loadingDiv" class="loading">
+      <div class="spinner"></div>
+      <h2>Submitting your consent...</h2>
+      <p>Please wait while we process your response.</p>
+    </div>
+  </div>
+  
+  <!-- Hidden form for auto-submit -->
+  <form id="autoSubmitForm" method="POST" style="display: none;">
+    <input type="hidden" name="user_response" id="hiddenUserResponse">
+  </form>
+  
+  <script>
+    // Parse URL parameters
+    function getUrlParams() {
+      const params = new URLSearchParams(window.location.search);
+      return {
+        consent_jwt: params.get('consent_jwt'),
+        target: params.get('target')
+      };
+    }
+    
+    // Decode JWT (without verification - client-side only)
+    function decodeJWT(token) {
+      try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+      } catch (e) {
+        throw new Error('Invalid JWT format');
+      }
+    }
+    
+    // Escape HTML to prevent XSS
+    function escapeHtml(text) {
+      const map = {
+        '&': '&',
+        '<': '<',
+        '>': '>',
+        '"': '"',
+        "'": '&#039;'
+      };
+      return String(text).replace(/[&<>"']/g, m => map[m]);
+    }
+    
+    // Show error message
+    function showError(message) {
+      const errorBox = document.getElementById('errorBox');
+      errorBox.textContent = message;
+      errorBox.style.display = 'block';
+      document.getElementById('consentForm').classList.add('hidden');
+    }
+    
+    // Render scopes as checkboxes
+    function renderScopes(scopes) {
+      const container = document.getElementById('scopesContainer');
+      container.innerHTML = '';
+      
+      scopes.forEach((scope, index) => {
+        const scopeDiv = document.createElement('div');
+        scopeDiv.className = 'scope-item';
+        
+        const label = document.createElement('label');
+        
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.name = `scope_${index}`;
+        checkbox.value = scope;
+        checkbox.checked = true;
+        checkbox.dataset.scope = scope;
+        
+        const span = document.createElement('span');
+        span.className = 'scope-label';
+        span.textContent = scope;
+        
+        label.appendChild(checkbox);
+        label.appendChild(span);
+        scopeDiv.appendChild(label);
+        container.appendChild(scopeDiv);
+      });
+    }
+    
+    // Build user response object from checkboxes
+    function buildUserResponse(scopes) {
+      const userResponse = {};
+      scopes.forEach((scope, index) => {
+        const checkbox = document.querySelector(`input[name="scope_${index}"]`);
+        userResponse[scope] = checkbox ? checkbox.checked : false;
+      });
+      return userResponse;
+    }
+    
+    // Submit consent to target URL
+    function submitConsent(target, userResponse) {
+      // Show loading state
+      document.getElementById('consentForm').classList.add('hidden');
+      document.getElementById('loadingDiv').classList.add('show');
+      
+      // Create and submit form
+      const form = document.getElementById('autoSubmitForm');
+      form.action = target;
+      document.getElementById('hiddenUserResponse').value = JSON.stringify(userResponse);
+      form.submit();
+    }
+    
+    // Initialize the page
+    function init() {
+      try {
+        // Get URL parameters
+        const params = getUrlParams();
+        
+        if (!params.consent_jwt) {
+          showError('Missing consent_jwt parameter');
+          return;
+        }
+        
+        if (!params.target) {
+          showError('Missing target parameter');
+          return;
+        }
+        
+        // Decode JWT
+        let decodedToken;
+        try {
+          decodedToken = decodeJWT(params.consent_jwt);
+        } catch (e) {
+          showError('Invalid consent_jwt: ' + e.message);
+          return;
+        }
+        
+        // Extract scopes
+        const scopes = decodedToken.scope || [];
+        
+        if (!Array.isArray(scopes)) {
+          showError('Invalid scope format in JWT - must be an array');
+          return;
+        }
+        
+        if (scopes.length === 0) {
+          showError('No scopes found in JWT');
+          return;
+        }
+        
+        // Render scopes
+        renderScopes(scopes);
+        
+        // Set up event listeners
+        document.getElementById('submitBtn').addEventListener('click', function() {
+          const userResponse = buildUserResponse(scopes);
+          submitConsent(params.target, userResponse);
+        });
+        
+        document.getElementById('denyAllBtn').addEventListener('click', function() {
+          // Uncheck all checkboxes
+          const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+          checkboxes.forEach(cb => cb.checked = false);
+          
+          // Submit
+          const userResponse = buildUserResponse(scopes);
+          submitConsent(params.target, userResponse);
+        });
+        
+      } catch (e) {
+        showError('An error occurred: ' + e.message);
+      }
+    }
+    
+    // Run initialization when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  </script>
+</body>
+</html>

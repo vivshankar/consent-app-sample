@@ -9,6 +9,7 @@ const morgan = require('morgan');
 // Import routes
 const basicRoutes = require('./routes/basic');
 const verifyRoutes = require('./routes/verify');
+const consentPageRoutes = require('./routes/consentPage');
 
 // Initialize express app
 const app = express();
@@ -26,6 +27,7 @@ app.get('/health', (req, res) => {
 // Routes
 app.use('/v1.0/basic', basicRoutes);
 app.use('/v1.0/verify', verifyRoutes);
+app.use('/consent', consentPageRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
