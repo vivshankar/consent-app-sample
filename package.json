@@ -1,5 +1,5 @@
 {
-  "name": "consent-app-sample",
+  "name": "demo-external-consent-mediator",
   "version": "1.0.0",
   "description": "Privacy and Consent API Server implementing the example endpoints from privacy_api.yml",
   "main": "index.js",
