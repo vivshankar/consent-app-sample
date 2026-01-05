@@ -1,11 +1,10 @@
-# Privacy and Consent API Server
+# IBM Verify Consent Mediator Sample App
 
-This Node.js application implements a server that provides privacy and consent management endpoints based on the privacy_api.yml OpenAPI specification. These endpoints can be used in IBM Verify as external consent providers. This application is meant to be a sample implementation and should be modified to fit your specific use case.
+The IBM Verify Consent Mediator Sample App is a Node.js application that serves privacy and consent management endpoints based on the [OpenAPI specification for external consent providers](https://docs.verify.ibm.com/verify/page/api-documentation). It is intended to be a sample external consent management mediator or proxy that uses the [IBM Verify Privacy SDK](https://www.npmjs.com/package/@ibm-verify/privacy) to integrate with a IBM Verify tenant to manage privacy and consent.
 
-There are two implementations:
+An illustration of this implementation is as below.
 
-1. A basic consent provider that uses in-memory storage for consent data.
-2. A consent provider that uses IBM Verify as the privacy and consent management service.
+![](configuring-verify/images/architecture.png)
 
 ## Features
 
@@ -21,7 +20,7 @@ There are two implementations:
 - Request validation
 - Error handling
 - In-memory storage for basic endpoints (for demonstration purposes)
-- IBM Verify Privacy SDK integration for verify endpoints
+- IBM Verify Privacy SDK integration for Verify endpoints
 
 ## Installation
 

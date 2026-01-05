@@ -1,7 +1,7 @@
 {
-  "name": "demo-external-consent-mediator",
+  "name": "verify-consent-mediator-sample",
   "version": "1.0.0",
-  "description": "Privacy and Consent API Server implementing the example endpoints from privacy_api.yml",
+  "description": "Consent mediator application that acts as a bridge to use IBM Verify privacy and consent management capabilities",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",

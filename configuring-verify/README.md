@@ -1,6 +1,6 @@
 # Configuring IBM Verify for External Consent Providers
 
-This guide walks you through configuring IBM Verify to use this Node.js application as an external consent provider. Use the accompanying Postman collection (`External consent providers.postman_collection.json`) for API requests.
+This guide walks you through configuring IBM Verify to use this Node.js application as an external consent provider. Use the accompanying Postman collection (`external-consent-providers.postman_collection.json`) for API requests.
 
 ## Overview
 
