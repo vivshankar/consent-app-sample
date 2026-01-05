@@ -1,6 +1,6 @@
-# IBM Verify External Consent Mediator App
+# IBM Verify Consent Mediator Sample App
 
-The IBM Verify External Consent Mediator App is a Node.js application that serves privacy and consent management endpoints based on the [OpenAPI specification for external consent providers](https://docs.verify.ibm.com/verify/page/api-documentation). It is intended to be a sample external consent management mediator or proxy that uses the [IBM Verify Privacy SDK](https://www.npmjs.com/package/@ibm-verify/privacy) to integrate with a IBM Verify tenant to manage privacy and consent.
+The IBM Verify Consent Mediator Sample App is a Node.js application that serves privacy and consent management endpoints based on the [OpenAPI specification for external consent providers](https://docs.verify.ibm.com/verify/page/api-documentation). It is intended to be a sample external consent management mediator or proxy that uses the [IBM Verify Privacy SDK](https://www.npmjs.com/package/@ibm-verify/privacy) to integrate with a IBM Verify tenant to manage privacy and consent.
 
 An illustration of this implementation is as below.
 
